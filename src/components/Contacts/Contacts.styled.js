@@ -11,7 +11,7 @@ export const StyledItem = styled.li`
 
 export const StyledText = styled.p`
   display: inline-block;
-  width: 250px;
+  width: 280px;
   font-size: 18px;
 `;
 

@@ -1,6 +1,5 @@
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { nanoid } from 'nanoid';
 import {
   StyledButton,
   StyledError,
@@ -8,8 +7,9 @@ import {
   StyledForm,
   StyledLabel,
 } from './ContactsForm.styled';
-import { createContact } from 'redux/reducer/contactsSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { selectContacts } from 'redux/selectors';
+import { addContact } from 'redux/operations';
 
 const SignupSchema = Yup.object().shape({
   name: Yup.string().min(3, 'Too Short!').required('Required'),
@@ -17,7 +17,7 @@ const SignupSchema = Yup.object().shape({
 });
 
 export const ContactsForm = () => {
-  const contacts = useSelector(state => state.contacts.value);
+  const contacts = useSelector(selectContacts);
   const dispatch = useDispatch();
 
   return (
@@ -28,15 +28,17 @@ export const ContactsForm = () => {
       }}
       validationSchema={SignupSchema}
       onSubmit={(values, actions) => {
-        if (
-          contacts.find(
-            contact => contact.name.toLowerCase() === values.name.toLowerCase()
-          )
-        ) {
-          alert(`${values.name} is already in contacts.`);
-          return;
+        for (const el of contacts) {
+          if (el.name === values.name) {
+            return alert(`${el.name} is already in contacts.`);
+          }
         }
-        dispatch(createContact({ ...values, id: nanoid() }));
+        dispatch(
+          addContact({
+            name: values.name,
+            phone: values.number,
+          })
+        );
         actions.resetForm();
       }}
     >
